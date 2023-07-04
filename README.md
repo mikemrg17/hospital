@@ -1,0 +1,2 @@
+# hospital
+Basic hospital functions
