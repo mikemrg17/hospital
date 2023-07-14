@@ -8,6 +8,7 @@ const app = express();
 const secret_key = "secret_key";
 
 app.use(cors());
+app.use(express.json());
 
 const authenticate_jwt = (req, res, next) => {
   console.log("Middleware entering...");
@@ -27,23 +28,28 @@ const authenticate_jwt = (req, res, next) => {
 };
 
 app.post("/api/login", (req, res) => {
-  const { email, password } = req.query;
-  console.log("Email: ", email, " password: ", password);
+  const { email, password } = req.body;
+  console.log(`LogIn request by: ${email} identified by: ${password}`);
   connection.connect((error) => {
     if (error) throw error;
 
-    console.log("Connected to MySQL!");
+    //console.log("Connected to MySQL!");
     connection.query(
-      `SELECT * FROM Users WHERE email=${email} AND password=${password};`,
+      `SELECT * FROM Users WHERE email='${email}' AND password='${password}';`,
       (error, result) => {
-        if (error) res.status(404).json({ message: "Invalid credentials :(" });
+        if (error) {
+          console.log("Invalid credentials :(");
+          res.status(401).json({ message: "Invalid credentials :(" });
+          return;
+        }
 
-        console.log("Result: " + JSON.stringify(result[0]));
+        //console.log("Result: " + JSON.stringify(result[0]));
         const token = json_web_token.sign(result[0], secret_key, {
           expiresIn: "1h",
         });
 
-        res.status(200).json({ token });
+        res.status(200).json({ token, user: result[0] });
+        return;
       }
     );
   });
