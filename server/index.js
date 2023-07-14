@@ -50,7 +50,7 @@ app.post("/api/login", (req, res) => {
 });
 
 app.get("api/private", (req, res) => {
-  res.send("Privada");
+  res.send("Privada"); // Hacer funcionar la clave privada
 });
 
 app.listen(process.env.PORT, () => {
