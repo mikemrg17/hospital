@@ -27,6 +27,32 @@ const authenticate_jwt = (req, res, next) => {
   }
 };
 
+app.post("/api/register", (req, res) => { //Register
+    const { email, password, name, lastname , curp, age , id_sex ,phone_number, id_user_type} = req.body;
+    console.log(`Register request by: ${email} identified by: ${password} name: ${name} lastn ${lastname}, curp ${curp} age ${age} sex ${id_sex} phone ${phone_number} type ${id_user_type}`);
+    connection.connect((error) => {
+        connection.query(
+            `select * from Users where email = '${email}'`,
+            (error, result) => {
+                if (result.length>0) {
+                    console.log("email already exists");
+                    res.status(500).json({message: 'email already exists'});
+                }
+                else{
+                    var sql = `INSERT INTO USERS (email, password, name, lastname , curp, age , id_sex ,phone_number, id_user_type) VALUES ('${email}', '${password}', '${name}', '${lastname}' , '${curp}', ${age} , ${id_sex} ,${phone_number}, ${id_user_type})` ;
+                        connection.query(sql, function (error, result) {
+                            if (error) throw error;
+                            //console.log(result)
+                            console.log("user record inserted");
+                        }
+
+                    );
+                }
+            });
+    });
+        });
+
+
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
   console.log(`LogIn request by: ${email} identified by: ${password}`);
